@@ -303,6 +303,27 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
           <div class="ai-st" id="aiSt"></div>
         </div>
 
+        <!-- ENHANCE WITH AI -->
+        <div class="ai-block" style="background:#f0fdf4;border-color:#86efac;margin-top:12px">
+          <div class="ai-block-head" style="margin-bottom:11px">
+            <span style="font-size:16px">🚀</span>
+            <span class="aitag" style="color:#166534">Enhance Page with AI</span>
+          </div>
+          <p style="font-size:12px;color:#166534;line-height:1.5;margin-bottom:12px">Generate rich SEO content blocks using the artist &amp; venue. Each block is added to your HTML and preview — generate the page first, then use any of these.</p>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn btn-sm" style="background:#166534;text-align:left;display:flex;align-items:center;gap:8px" onclick="doEnhance('songs')" id="btnSongs">
+              <span>🎵</span><div><div style="font-weight:700">Top Songs &amp; Setlist Expectations</div><div style="font-size:10.5px;font-weight:400;opacity:.85">What to expect on the night — boosts long-tail song searches</div></div>
+            </button>
+            <button class="btn btn-sm" style="background:#1d4ed8;text-align:left;display:flex;align-items:center;gap:8px" onclick="doEnhance('artist')" id="btnArtist">
+              <span>🎤</span><div><div style="font-weight:700">Artist Background &amp; Tour Context</div><div style="font-size:10.5px;font-weight:400;opacity:.85">Who they are, their history, why this tour matters</div></div>
+            </button>
+            <button class="btn btn-sm" style="background:#7c3aed;text-align:left;display:flex;align-items:center;gap:8px" onclick="doEnhance('venue')" id="btnVenue">
+              <span>🏟</span><div><div style="font-weight:700">Venue Background</div><div style="font-size:10.5px;font-weight:400;opacity:.85">History &amp; facts about the venue — ranks for venue searches</div></div>
+            </button>
+          </div>
+          <div class="ai-st" id="enhanceSt" style="margin-top:10px"></div>
+        </div>
+
         <button class="btn btn-full" onclick="generate()">⚡ Generate &amp; Preview</button>
         <button class="btn btn-full btn-green" onclick="saveEvent()" style="margin-top:8px">💾 Save to History</button>
       </div>
@@ -833,6 +854,109 @@ ${currentIntro}`;
     st.className='ai-st error';st.innerHTML='⚠️ Rewrite failed: '+err.message;
   }
   btn.disabled=false;
+}
+
+// ENHANCE WITH AI
+const ENHANCE_PROMPTS = {
+  songs: (f) => `You write SEO content for Belfast Mini Coach, a concert bus company in Belfast, Northern Ireland.
+
+Write a section called "What to Expect on the Night" for a ${f.artist} concert at ${f.venue}, ${f.county}.
+
+Include:
+- A short intro sentence about the live show atmosphere
+- A list of 8-12 of their best known / most popular songs fans can expect to hear, presented as bullet points with a one-line description of each song
+- A closing sentence about the overall experience
+
+Format as clean HTML using only: <h3>, <p>, <ul>, <li>. No inline styles. No markdown. Start with the <h3> tag.
+Keep it enthusiastic and natural. Optimise naturally for searches like "${f.artist} setlist", "${f.artist} songs live", "what songs does ${f.artist} play".`,
+
+  artist: (f) => `You write SEO content for Belfast Mini Coach, a concert bus company in Belfast, Northern Ireland.
+
+Write a section called "About ${f.artist}" for a concert page promoting bus travel to see them at ${f.venue}, ${f.county}.
+
+Include:
+- Who they are and where they're from
+- Key albums and their most successful era
+- Why this tour / show is significant
+- Their connection to Irish / UK audiences if relevant
+- A sentence linking back to why Belfast fans won't want to miss this
+
+Format as clean HTML using only: <h3>, <p>. No inline styles. No markdown. Start with the <h3> tag.
+Around 150-200 words. Natural SEO for "${f.artist} tour ${(f.date.match(/\d{4}/)||[new Date().getFullYear()])[0]}", "${f.artist} Belfast", "${f.artist} Ireland".`,
+
+  venue: (f) => `You write SEO content for Belfast Mini Coach, a concert bus company in Belfast, Northern Ireland.
+
+Write a section called "About ${f.venue}" for a concert page promoting bus travel from Belfast to ${f.venue}, ${f.county}.
+
+Include:
+- History and background of the venue
+- Its capacity and what makes it special as a concert venue
+- Notable past events or artists who have performed there
+- What the experience of attending a show there is like
+- A practical note about it being a large venue best reached by coach from Belfast
+
+Format as clean HTML using only: <h3>, <p>. No inline styles. No markdown. Start with the <h3> tag.
+Around 150-200 words. Natural SEO for "${f.venue} concerts", "events at ${f.venue}", "${f.venue} ${f.county}".`
+};
+
+async function doEnhance(type) {
+  const current = document.getElementById('htmlOut').value;
+  if (!current) { alert('Generate the page first, then use Enhance with AI.'); return; }
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    const st = document.getElementById('enhanceSt');
+    st.className = 'ai-st error'; st.style.display = 'block';
+    st.innerHTML = '⚠️ Add your Anthropic API key in Step 1 first.'; return;
+  }
+  const f = getBuildFields();
+  if (!f.artist || f.artist === '[ARTIST]') {
+    const st = document.getElementById('enhanceSt');
+    st.className = 'ai-st error'; st.style.display = 'block';
+    st.innerHTML = '⚠️ Fill in the Artist name first.'; return;
+  }
+
+  const btnMap = { songs: 'btnSongs', artist: 'btnArtist', venue: 'btnVenue' };
+  const labelMap = { songs: 'Top Songs', artist: 'Artist Background', venue: 'Venue Background' };
+  const btn = document.getElementById(btnMap[type]);
+  const origHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = btn.innerHTML.replace(/<div>.*<\/div>/s, '<div><span class="spin"></span> Generating…</div>');
+
+  const st = document.getElementById('enhanceSt');
+  st.className = 'ai-st loading'; st.style.display = 'block';
+  st.innerHTML = '<span class="spin"></span> Generating ' + labelMap[type] + ' section…';
+
+  try {
+    const prompt = ENHANCE_PROMPTS[type](f);
+    const data = await callAI(apiKey, {
+      model: 'claude-sonnet-4-5',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }]
+    });
+    const block = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
+
+    // Insert before the Popular Searches paragraph or before the final hr
+    const insertMarker = '<p><strong>Popular Searches:</strong>';
+    let newHTML;
+    if (current.includes(insertMarker)) {
+      newHTML = current.replace(insertMarker, '<hr />\n\n' + block + '\n\n' + insertMarker);
+    } else {
+      newHTML = current + '\n\n<hr />\n\n' + block;
+    }
+
+    document.getElementById('htmlOut').value = newHTML;
+    document.getElementById('prevContent').innerHTML = newHTML;
+    document.getElementById('charCount').textContent = newHTML.length.toLocaleString() + ' chars';
+
+    st.className = 'ai-st ok'; st.style.display = 'block';
+    st.innerHTML = '✅ ' + labelMap[type] + ' added! Check the Preview and HTML tabs.';
+  } catch (err) {
+    st.className = 'ai-st error'; st.style.display = 'block';
+    st.innerHTML = '⚠️ Failed: ' + err.message;
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = origHTML;
 }
 
 // GENERATE
