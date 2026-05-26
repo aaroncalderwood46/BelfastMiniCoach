@@ -96,7 +96,7 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
 .searches-box span{display:inline-block;background:var(--blue-light);color:var(--blue);border:1px solid #bfdbfe;border-radius:4px;padding:2px 8px;margin:2px 3px 2px 0;font-size:12px;font-weight:600}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin{display:inline-block;width:13px;height:13px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .55s linear infinite;vertical-align:middle;margin-right:5px}
- 
+
 /* COMPLETION */
 .prog-wrap{padding:16px 20px}
 .prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
@@ -111,7 +111,7 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
 .pc.done{background:var(--green-light);border-color:#a7f3d0;color:var(--green);font-weight:700}
 .pc.done::before{content:'✓ '}
 .pc:not(.done)::before{content:'○ '}
- 
+
 /* HISTORY */
 .hlist{display:flex;flex-direction:column;gap:7px;max-height:230px;overflow-y:auto}
 .hi{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;background:#fafafa;cursor:pointer;transition:all .18s}
@@ -123,7 +123,7 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
 .hi-del{background:none;border:none;cursor:pointer;color:#ccc;font-size:14px;padding:2px 5px;border-radius:4px;transition:color .15s;line-height:1}
 .hi-del:hover{color:var(--red)}
 .hi-empty{font-size:12.5px;color:#aaa;font-style:italic;text-align:center;padding:16px 0}
- 
+
 /* AI PANEL */
 .ai-block{background:var(--purple-light);border:1.5px solid #c4b5fd;border-radius:9px;padding:14px 16px;margin-top:14px}
 .ai-block-head{display:flex;align-items:center;gap:7px;margin-bottom:9px}
@@ -132,12 +132,12 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
 .ai-st.loading{background:#ede9fe;color:#5b21b6;display:block}
 .ai-st.error{background:#fef2f2;color:#991b1b;display:block}
 .ai-st.ok{background:var(--green-light);color:var(--green);display:block}
- 
+
 /* FETCH MODE TOGGLE */
 .fmode{display:flex;gap:6px;margin-bottom:10px}
 .fmode-btn{padding:6px 12px;font-family:inherit;font-size:12px;font-weight:600;border:1.5px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;transition:all .18s;color:var(--muted)}
 .fmode-btn.on{border-color:var(--purple);background:var(--purple-light);color:var(--purple)}
- 
+
 /* API KEY */
 .apikey-bar{background:#fffbeb;border:1.5px solid #fcd34d;border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .apikey-bar label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#92400e;white-space:nowrap}
@@ -154,11 +154,11 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
   <span>WordPress Product Description Builder</span>
   <span class="hbadge">v2 · AI Enhanced</span>
 </header>
- 
+
 <div class="wrap">
   <!-- LEFT -->
   <div>
- 
+
     <!-- COMPLETION INDICATOR -->
     <div class="card">
       <div class="prog-wrap">
@@ -170,7 +170,7 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
         <div class="prog-chips" id="progChips"></div>
       </div>
     </div>
- 
+
     <!-- STEP 1: URL FETCH -->
     <div class="card">
       <div class="card-head"><span class="n">1</span> Paste Event URL (optional)</div>
@@ -199,7 +199,7 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
         <div class="note" id="modeNote">💡 <strong>AI Extract</strong> uses Claude to intelligently read the page — far better at Ticketmaster and blocked sites.</div>
       </div>
     </div>
- 
+
     <!-- STEP 2: EVENT DETAILS -->
     <div class="card">
       <div class="card-head"><span class="n">2</span> Event Details</div>
@@ -246,7 +246,7 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
             <input type="text" id="f_end" placeholder="e.g. 11:00 PM" oninput="liveUpdate()">
           </div>
         </div>
- 
+
         <div class="divider"></div>
         <div class="slabel">Pickup Times</div>
         <div class="pickup">
@@ -270,7 +270,7 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
             Auto-offset Lisburn +30min, Banbridge +60min from Belfast
           </label>
         </div>
- 
+
         <div class="divider"></div>
         <div class="slabel">Extras — leave blank to omit</div>
         <div class="field">
@@ -291,7 +291,7 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
             <input type="url" id="f_xurl" placeholder="https://belfastminicoach.com/..." oninput="liveUpdate()">
           </div>
         </div>
- 
+
         <!-- AI REWRITE -->
         <div class="ai-block">
           <div class="ai-block-head">
@@ -302,12 +302,12 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
           <button class="btn btn-purple btn-sm" id="rewriteBtn" onclick="doRewrite()">✨ Rewrite Intro with AI</button>
           <div class="ai-st" id="aiSt"></div>
         </div>
- 
+
         <button class="btn btn-full" onclick="generate()">⚡ Generate &amp; Preview</button>
         <button class="btn btn-full btn-green" onclick="saveEvent()" style="margin-top:8px">💾 Save to History</button>
       </div>
     </div>
- 
+
     <!-- STEP 3: HISTORY -->
     <div class="card">
       <div class="card-head"><span class="n">3</span> Saved Events</div>
@@ -318,9 +318,9 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
         </div>
       </div>
     </div>
- 
+
   </div>
- 
+
   <!-- RIGHT -->
   <div class="card">
     <div class="tabs">
@@ -351,14 +351,14 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
     </div>
   </div>
 </div>
- 
+
 <script>
 // LOGO
 document.getElementById('logoImg').src='data:image/webp;base64,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';
- 
+
 // STATE
 let fetchMode = 'ai';
- 
+
 function setMode(m) {
   fetchMode = m;
   document.getElementById('modeAI').classList.toggle('on', m==='ai');
@@ -367,7 +367,7 @@ function setMode(m) {
     ? '💡 <strong>AI Extract</strong> uses Claude to intelligently read the page — far better at Ticketmaster and blocked sites.'
     : '💡 <strong>Basic Scrape</strong> uses JSON-LD and regex. Fast but often fails on Ticketmaster. Try AI Extract if this returns nothing.';
 }
- 
+
 // HELPERS
 function t12(v){if(!v)return'';const p=v.split(':'),h=+p[0],m=+p[1];return(h%12||12)+':'+(m<10?'0':'')+m+' '+(h>=12?'PM':'AM');}
 function gv(id){return document.getElementById(id).value.trim()}
@@ -393,7 +393,7 @@ function copyText(text,msgId){
     const m=document.getElementById(msgId);m.classList.add('show');setTimeout(()=>m.classList.remove('show'),2500);
   });
 }
- 
+
 // COMPLETION INDICATOR
 const REQ = [
   {id:'f_artist',label:'Artist'},{id:'f_venue',label:'Venue'},{id:'f_county',label:'County'},
@@ -419,7 +419,7 @@ function updateProgress(){
   pctEl.classList.toggle('full',pct===100);
   pctEl.textContent=pct+'%';
 }
- 
+
 // API KEY
 const AKEY='bmc_anthropic_key';
 const WKEY='bmc_worker_url';
@@ -438,7 +438,7 @@ function requireKey(){
   if(!k){setStatus('error','⚠️ Paste your Anthropic API key above first (sk-ant-...).');return null;}
   return k;
 }
- 
+
 // AI CALL — routes through Cloudflare Worker to avoid CORS
 async function callAI(apiKey, body) {
   const worker = getWorkerUrl();
@@ -454,7 +454,7 @@ async function callAI(apiKey, body) {
   }
   return resp.json();
 }
- 
+
 // FETCH HTML via worker (preferred) or public proxies (fallback)
 async function fetchHtml(url){
   const worker=getWorkerUrl();
@@ -472,7 +472,7 @@ async function fetchHtml(url){
 }
 function setStatus(type,html){const el=document.getElementById('fetchStatus');el.className='status '+type;el.innerHTML=html;}
 function markAuto(id,val){if(!val)return;const el=document.getElementById(id);el.value=val;el.classList.add('ok');}
- 
+
 // BASIC SCRAPE
 function extract(html){
   const doc=new DOMParser().parseFromString(html,'text/html');
@@ -496,7 +496,7 @@ function extract(html){
   if(!r.gates){const m=txt.match(/(?:doors?|gates?)\s*(?:open)?\s*[:\-]?\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm))/i);if(m)r.gates=m[1].trim().toUpperCase();}
   return r;
 }
- 
+
 async function doFetch(){
   const url=document.getElementById('tmUrl').value.trim();
   if(!url){setStatus('error','⚠️ Paste an event URL first.');return;}
@@ -506,7 +506,7 @@ async function doFetch(){
   else await doBasicFetch(url);
   btn.disabled=false;btn.innerHTML='Fetch';
 }
- 
+
 async function doBasicFetch(url){
   setStatus('loading','<span class="spin"></span> Scraping page…');
   try{
@@ -519,7 +519,7 @@ async function doBasicFetch(url){
     n?setStatus('ok2','✅ '+n+' field'+(n>1?'s':'')+' filled!'):setStatus('error','⚠️ Page loaded but no details found — try AI Extract or fill manually.');
   }catch(err){setStatus('error','⚠️ Scrape failed. Try AI Extract or fill manually.');}
 }
- 
+
 async function doAIFetch(url){
   const apiKey=requireKey();if(!apiKey)return;
   const workerSet=getWorkerUrl();
@@ -535,7 +535,7 @@ async function doAIFetch(url){
     } else {
       pageText='Page could not be fetched. URL: '+url;
     }
- 
+
     const prompt=`Extract concert event details for a Belfast-based coach hire company.
 Return ONLY valid JSON (no markdown, no explanation) with these fields:
 - artist: headline performer/event name (clean, no "tickets" or site names)
@@ -544,13 +544,13 @@ Return ONLY valid JSON (no markdown, no explanation) with these fields:
 - date: formatted as "Saturday 18th July 2026"
 - gates: doors/gates open time in 12hr format e.g. "3:00 PM" (empty string if unknown)
 - lineup: support acts comma-separated (empty string if none)
- 
+
 Use empty string "" for unknown fields. Do NOT invent values.
- 
+
 Event page:
 ${pageText}`;
- 
-    const aiResp=await callAI(apiKey,{model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:prompt}]});
+
+    const aiResp=await callAI(apiKey,{model:'claude-sonnet-4-5',max_tokens:400,messages:[{role:'user',content:prompt}]});
     const raw=aiResp.content.filter(b=>b.type==='text').map(b=>b.text).join('');
     const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
     let n=0;
@@ -560,12 +560,12 @@ ${pageText}`;
     n?setStatus('ok2','✨ AI filled '+n+' field'+(n>1?'s':'')+' automatically!'):setStatus('error','⚠️ AI couldn\'t find event details — fill manually below.');
   }catch(err){setStatus('error','⚠️ AI extract failed: '+err.message);}
 }
- 
+
 // HISTORY
 const HKEY='bmc_event_history';
 function getH(){try{return JSON.parse(localStorage.getItem(HKEY)||'[]');}catch(e){return[];}}
 function putH(a){localStorage.setItem(HKEY,JSON.stringify(a));}
- 
+
 function getFields(){
   return{
     artist:gv('f_artist'),tour:gv('f_tour'),venue:gv('f_venue'),county:gv('f_county'),
@@ -623,7 +623,7 @@ function renderHistory(){
     </div>`;
   }).join('');
 }
- 
+
 // BUILD HTML
 function getBuildFields(){
   return{
@@ -636,7 +636,7 @@ function getBuildFields(){
     bH:+(gv('p_bel')||'13:00').split(':')[0]
   };
 }
- 
+
 function buildHTML(f){
   const ap=h=>(h>12?h-12:h)+':00 '+(h>=12?'PM':'AM');
   const arr=ap(f.bH+2)+' to '+ap(f.bH+3);
@@ -682,7 +682,7 @@ function buildHTML(f){
 +xp+'\n'
 +'<p>See all upcoming concert transport from Belfast \u2192 <a href="https://www.belfastminicoach.com/events-and-tours/">Events &amp; Tours</a></p>';
 }
- 
+
 function buildSearches(f){
   const a=f.artist,v=f.venue,vs=f.venue.split(',')[0].split(' ')[0];
   const yr=(f.date.match(/\d{4}/)||[new Date().getFullYear()])[0];
@@ -692,7 +692,7 @@ function buildSearches(f){
 function buildSEOTitle(f){const vs=f.venue.split(',')[0];const yr=(f.date.match(/\d{4}/)||[''])[0];return 'Bus to '+f.artist+' at '+vs+' | Belfast Mini Coach | '+yr;}
 function buildSEODesc(f){const vs=f.venue.split(',')[0];const yr=(f.date.match(/\d{4}/)||[''])[0];return 'Book your return bus to '+f.artist+' at '+vs+' '+yr+'. Direct coach travel from Belfast, Lisburn & Banbridge. No parking, no stress — guaranteed return home. Book now with Belfast Mini Coach.';}
 function buildSEOSlug(f){const a=f.artist.toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,'-');const v=f.venue.split(',')[0].toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,'-');return 'bus-to-'+a+'-'+v;}
- 
+
 function buildSEOPanel(f){
   const title=buildSEOTitle(f),desc=buildSEODesc(f),slug=buildSEOSlug(f);
   const focus='bus to '+f.artist+' '+f.venue.split(',')[0];
@@ -721,7 +721,7 @@ function buildSEOPanel(f){
 <button class="btn btn-blue" onclick="copyText(document.getElementById('seoDesc').value,'copiedDesc')" style="margin-left:8px">📋 Copy Description</button><span class="copied" id="copiedDesc">✅ Copied!</span>
 </div></div>`;
 }
- 
+
 // AI REWRITE
 async function doRewrite(){
   const current=document.getElementById('htmlOut').value;
@@ -733,21 +733,21 @@ async function doRewrite(){
   btn.disabled=true;
   const st=document.getElementById('aiSt');
   st.className='ai-st loading';st.innerHTML='<span class="spin"></span> Rewriting intro…';
- 
+
   const introMatch=current.match(/<p>Experience[\s\S]*?<\/p>/);
   const currentIntro=introMatch?introMatch[0]:'';
   const yr=(f.date.match(/\d{4}/)||[new Date().getFullYear()])[0];
- 
+
   const prompt=`You write product descriptions for Belfast Mini Coach, a concert bus service from Belfast.
 Rewrite the following intro paragraph with fresh wording — same facts, different sentence structure and energy. 2-3 sentences. Enthusiastic and direct. Keep the artist name, venue, city and year accurate. Return ONLY the replacement <p>...</p> HTML, nothing else.
- 
+
 Artist: ${f.artist} | Venue: ${f.venue} | Location: ${f.county} | Year: ${yr}
- 
+
 Current:
 ${currentIntro}`;
- 
+
   try{
-    const aiResp=await callAI(apiKey,{model:'claude-sonnet-4-20250514',max_tokens:250,messages:[{role:'user',content:prompt}]});
+    const aiResp=await callAI(apiKey,{model:'claude-sonnet-4-5',max_tokens:250,messages:[{role:'user',content:prompt}]});
     const newIntro=aiResp.content.filter(b=>b.type==='text').map(b=>b.text).join('').trim();
     const newHTML=current.replace(/<p>Experience[\s\S]*?<\/p>/,newIntro);
     document.getElementById('htmlOut').value=newHTML;
@@ -758,7 +758,7 @@ ${currentIntro}`;
   }
   btn.disabled=false;
 }
- 
+
 // GENERATE
 function generate(){
   const f=getBuildFields();
@@ -778,7 +778,7 @@ function liveUpdate(){
   if(!document.getElementById('htmlOut').value)return;
   generate();
 }
- 
+
 // INIT
 const _savedKey=localStorage.getItem(AKEY);
 if(_savedKey)document.getElementById('apiKeyInput').value=_savedKey;
