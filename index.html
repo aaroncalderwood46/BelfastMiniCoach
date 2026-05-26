@@ -179,7 +179,13 @@ header .hbadge{margin-left:auto;background:rgba(255,255,255,0.18);color:#fff;fon
           <label>🔑 Anthropic API Key</label>
           <input type="password" id="apiKeyInput" placeholder="sk-ant-..." oninput="saveApiKey()">
           <span class="apikey-saved" id="apiKeySaved">✓ Saved</span>
-          <span style="font-size:11px;color:#92400e">Required for AI features · stored locally in your browser</span>
+          <span style="font-size:11px;color:#92400e">Required for AI features · stored locally</span>
+        </div>
+        <div class="apikey-bar" style="border-color:#93c5fd;background:#eff6ff">
+          <label style="color:#1e40af">🌐 Proxy Worker URL</label>
+          <input type="url" id="workerUrl" placeholder="https://bmc-proxy.yourname.workers.dev" oninput="saveWorkerUrl()" style="border-color:#93c5fd">
+          <span class="apikey-saved" id="workerSaved">✓ Saved</span>
+          <span style="font-size:11px;color:#1e40af">Your Cloudflare Worker · stored locally</span>
         </div>
         <div class="fmode">
           <button class="fmode-btn on" id="modeAI" onclick="setMode('ai')">✨ AI Extract</button>
@@ -416,17 +422,37 @@ function updateProgress(){
 
 // API KEY
 const AKEY='bmc_anthropic_key';
+const WKEY='bmc_worker_url';
 function saveApiKey(){
   const v=document.getElementById('apiKeyInput').value.trim();
   if(v){localStorage.setItem(AKEY,v);const s=document.getElementById('apiKeySaved');s.classList.add('show');setTimeout(()=>s.classList.remove('show'),1500);}
 }
-function getApiKey(){
-  return document.getElementById('apiKeyInput').value.trim()||localStorage.getItem(AKEY)||'';
+function saveWorkerUrl(){
+  const v=document.getElementById('workerUrl').value.trim();
+  if(v){localStorage.setItem(WKEY,v);const s=document.getElementById('workerSaved');s.classList.add('show');setTimeout(()=>s.classList.remove('show'),1500);}
 }
+function getApiKey(){return document.getElementById('apiKeyInput').value.trim()||localStorage.getItem(AKEY)||'';}
+function getWorkerUrl(){return (document.getElementById('workerUrl').value.trim()||localStorage.getItem(WKEY)||'').replace(/\/$/,'');}
 function requireKey(){
   const k=getApiKey();
-  if(!k){setStatus('error','⚠️ Paste your Anthropic API key above first (sk-ant-...). Get one at console.anthropic.com');return null;}
+  if(!k){setStatus('error','⚠️ Paste your Anthropic API key above first (sk-ant-...).');return null;}
   return k;
+}
+
+// FETCH HTML via worker (preferred) or public proxies (fallback)
+async function fetchHtml(url){
+  const worker=getWorkerUrl();
+  // Try worker first if configured
+  if(worker){
+    try{
+      const r=await fetch(worker+'/?url='+encodeURIComponent(url),{signal:AbortSignal.timeout(20000)});
+      if(r.ok){const t=await r.text();if(t&&t.length>200&&!t.includes('"error"'))return t;}
+    }catch(e){}
+  }
+  // Fallback to public proxies
+  try{const r=await fetch('https://api.allorigins.win/get?url='+encodeURIComponent(url),{signal:AbortSignal.timeout(14000)});if(r.ok){const d=await r.json();if(d.contents&&d.contents.length>200)return d.contents;}}catch(e){}
+  try{const r=await fetch('https://corsproxy.io/?'+encodeURIComponent(url),{signal:AbortSignal.timeout(12000)});if(r.ok){const t=await r.text();if(t&&t.length>200)return t;}}catch(e){}
+  return null;
 }
 function setStatus(type,html){const el=document.getElementById('fetchStatus');el.className='status '+type;el.innerHTML=html;}
 function markAuto(id,val){if(!val)return;const el=document.getElementById(id);el.value=val;el.classList.add('ok');}
@@ -468,9 +494,7 @@ async function doFetch(){
 async function doBasicFetch(url){
   setStatus('loading','<span class="spin"></span> Scraping page…');
   try{
-    let html='';
-    try{const r=await fetch('https://api.allorigins.win/get?url='+encodeURIComponent(url),{signal:AbortSignal.timeout(14000)});if(r.ok){const d=await r.json();if(d.contents&&d.contents.length>200)html=d.contents;}}catch(e){}
-    if(!html){const r=await fetch('https://corsproxy.io/?'+encodeURIComponent(url),{signal:AbortSignal.timeout(12000)});if(r.ok)html=await r.text();}
+    const html=await fetchHtml(url);
     if(!html)throw new Error('Could not reach the page');
     const data=extract(html);let n=0;
     ['artist','venue','county','date','gates'].forEach(k=>{if(data[k]){markAuto('f_'+k,data[k]);n++;}});
@@ -482,12 +506,10 @@ async function doBasicFetch(url){
 
 async function doAIFetch(url){
   const apiKey=requireKey();if(!apiKey)return;
-  setStatus('info','<span class="spin"></span> Fetching page & extracting with AI… (10–20s)');
+  const workerSet=getWorkerUrl();
+  setStatus('info','<span class="spin"></span> Fetching page & extracting with AI…'+(workerSet?'':' (tip: add your Cloudflare Worker URL above for better results)'));
   try{
-    let html='';
-    try{const r=await fetch('https://api.allorigins.win/get?url='+encodeURIComponent(url),{signal:AbortSignal.timeout(18000)});if(r.ok){const d=await r.json();if(d.contents&&d.contents.length>200)html=d.contents;}}catch(e){}
-    if(!html){try{const r=await fetch('https://corsproxy.io/?'+encodeURIComponent(url),{signal:AbortSignal.timeout(14000)});if(r.ok)html=await r.text();}catch(e){}}
-
+    const html=await fetchHtml(url);
     let pageText='';
     if(html){
       const doc=new DOMParser().parseFromString(html,'text/html');
@@ -754,6 +776,8 @@ function liveUpdate(){
 // INIT
 const _savedKey=localStorage.getItem(AKEY);
 if(_savedKey)document.getElementById('apiKeyInput').value=_savedKey;
+const _savedWorker=localStorage.getItem(WKEY);
+if(_savedWorker)document.getElementById('workerUrl').value=_savedWorker;
 updateProgress();
 renderHistory();
 </script>
