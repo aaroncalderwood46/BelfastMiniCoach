@@ -693,33 +693,109 @@ function buildSEOTitle(f){const vs=f.venue.split(',')[0];const yr=(f.date.match(
 function buildSEODesc(f){const vs=f.venue.split(',')[0];const yr=(f.date.match(/\d{4}/)||[''])[0];return 'Book your return bus to '+f.artist+' at '+vs+' '+yr+'. Direct coach travel from Belfast, Lisburn & Banbridge. No parking, no stress — guaranteed return home. Book now with Belfast Mini Coach.';}
 function buildSEOSlug(f){const a=f.artist.toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,'-');const v=f.venue.split(',')[0].toLowerCase().replace(/[^a-z0-9\s]/g,'').replace(/\s+/g,'-');return 'bus-to-'+a+'-'+v;}
 
+function buildShortDesc(f){
+  const vs=f.venue.split(',')[0];
+  const yr=(f.date.match(/\d{4}/)||[new Date().getFullYear()])[0];
+  return 'Return bus to '+f.artist+' at '+vs+' on '+f.date+'. Departing Belfast, Lisburn &amp; Banbridge — no parking, no stress, guaranteed return home. Book your seat now with Belfast Mini Coach.';
+}
+
+function buildFAQSchema(f){
+  const vs=f.venue.split(',')[0];
+  const faqs=[
+    {q:'Are concert tickets included with the bus?',a:'No. This service is transport only. You will need to purchase your own concert tickets separately.'},
+    {q:'Where does the bus depart from?',a:'We depart from three locations: Belfast City Centre (Donegall Square West, beside City Hall), Lisburn (Sprucefield Centre Carpark), and Banbridge (Rathfriland Road Park & Share).'},
+    {q:'Will the coach drop me right at '+vs+'?',a:'No. All coaches use official coach parks. You will walk to the venue as directed by stewards on the day.'},
+    {q:'Can I bring alcohol on the bus?',a:'No. Alcohol is strictly not permitted on any Belfast Mini Coach service.'},
+    {q:'What time does the return coach leave?',a:'The return coach departs 60 minutes after the concert ends. Drop-off order is Banbridge, then Lisburn, then Belfast.'},
+    {q:'Can groups sit together?',a:'Yes. If your group boards together at the same stop we will do our best to seat you all together.'},
+    {q:'What happens if the concert runs late?',a:'The coach will wait and depart 60 minutes after the concert finishes, regardless of how late it runs.'}
+  ];
+  return JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":faqs.map(faq=>({"@type":"Question","name":faq.q,"acceptedAnswer":{"@type":"Answer","text":faq.a}}))},null,2);
+}
+
 function buildSEOPanel(f){
   const title=buildSEOTitle(f),desc=buildSEODesc(f),slug=buildSEOSlug(f);
   const focus='bus to '+f.artist+' '+f.venue.split(',')[0];
+  const shortDesc=buildShortDesc(f);
+  const faqSchema=buildFAQSchema(f);
   const st=buildSearches(f),terms=st.split(' | ');
-  const tc=title.length,dc=desc.length;
-  const tcC=tc>60?'bad':tc>50?'good':'warn',dcC=dc>160?'bad':dc>120?'good':'warn';
+  const tc=title.length,dc=desc.length,sc=shortDesc.replace(/&amp;/g,'&').length;
+  const tcC=tc>60?'bad':tc>50?'good':'warn';
+  const dcC=dc>160?'bad':dc>120?'good':'warn';
+  const scC=sc>160?'bad':sc>100?'good':'warn';
+
+  // Google SERP preview
+  const dispUrl='belfastminicoach.com › events › '+slug;
+  const previewTitle=title.length>60?title.substring(0,57)+'...':title;
+  const previewDesc=desc.length>160?desc.substring(0,157)+'...':desc;
+
   return `<div class="seo-panel">
-<div class="seo-block"><div class="seo-block-head">SEO Title <span class="seo-label">Paste into Yoast / Rank Math</span></div><input type="text" id="seoTitle" value="${title}" onclick="this.select()"><div class="char-bar"><span>Ideal: 50–60 chars</span><span class="cnt ${tcC}">${tc} chars</span></div></div>
-<div class="seo-block"><div class="seo-block-head">Meta Description <span class="seo-label">Paste into Yoast / Rank Math</span></div><textarea id="seoDesc" rows="3" onclick="this.select()">${desc}</textarea><div class="char-bar"><span>Ideal: 120–160 chars</span><span class="cnt ${dcC}">${dc} chars</span></div></div>
+
+<div class="seo-block"><div class="seo-block-head">SEO Title <span class="seo-label">Paste into Yoast / Rank Math</span></div><input type="text" id="seoTitle" value="${title}" oninput="updatePreview()" onclick="this.select()"><div class="char-bar"><span>Ideal: 50–60 chars</span><span class="cnt ${tcC}" id="tcCount">${tc} chars</span></div></div>
+
+<div class="seo-block"><div class="seo-block-head">Meta Description <span class="seo-label">Paste into Yoast / Rank Math</span></div><textarea id="seoDesc" rows="3" oninput="updatePreview()" onclick="this.select()">${desc}</textarea><div class="char-bar"><span>Ideal: 120–160 chars</span><span class="cnt ${dcC}" id="dcCount">${dc} chars</span></div></div>
+
+<div class="seo-block"><div class="seo-block-head" style="background:#1a6b3a">🔍 Google Search Preview <span class="seo-label">Live preview as you edit above</span></div>
+<div style="padding:18px 20px;background:#fff;font-family:arial,sans-serif">
+  <div style="font-size:12px;color:#006621;margin-bottom:2px">${dispUrl}</div>
+  <div id="prevTitle" style="font-size:18px;color:#1a0dab;font-weight:400;line-height:1.3;margin-bottom:4px;cursor:pointer">${previewTitle}</div>
+  <div id="prevDesc" style="font-size:13px;color:#545454;line-height:1.5">${previewDesc}</div>
+</div></div>
+
+<div class="seo-block"><div class="seo-block-head" style="background:#92400e">📝 WooCommerce Short Description <span class="seo-label">Paste into the Short Description field</span></div>
+<textarea id="shortDesc" rows="3" onclick="this.select()" style="width:100%;padding:12px 14px;border:none;outline:none;font-family:'Source Sans 3',sans-serif;font-size:13.5px;color:#2c2c2c;resize:vertical;line-height:1.6;background:#fff">${shortDesc}</textarea>
+<div class="char-bar"><span>WooCommerce sidebar blurb — keep under 160 chars</span><span class="cnt ${scC}">${sc} chars</span></div>
+<div style="padding:8px 14px;background:#fffbeb;border-top:1px solid #fcd34d;font-size:11.5px;color:#92400e">In WordPress: Products → Edit → scroll down to <strong>Product short description</strong> box (below main editor) → paste here</div></div>
+
 <div class="seo-block"><div class="seo-block-head">Focus Keyphrase</div><input type="text" id="seoFocus" value="${focus}" onclick="this.select()"><div class="char-bar"><span>Use in page title, first paragraph and headings</span><span></span></div></div>
+
 <div class="seo-block"><div class="seo-block-head">URL Slug <span class="seo-label">WordPress permalink</span></div><input type="text" id="seoSlug" value="${slug}" onclick="this.select()"><div class="char-bar"><span>Set as WordPress product permalink slug</span><span></span></div></div>
+
+<div class="seo-block"><div class="seo-block-head" style="background:#1e3a5f">📋 FAQ Schema — Paste into bottom of HTML product description <span class="seo-label">Enables FAQ rich results in Google</span></div>
+<div style="background:#1a1a2e;padding:0">
+<textarea id="faqSchema" readonly onclick="this.select()" style="width:100%;min-height:200px;padding:14px;background:transparent;border:none;outline:none;font-family:'Courier New',monospace;font-size:11px;color:#a8f0c6;resize:vertical;line-height:1.6">&lt;script type="application/ld+json"&gt;
+${faqSchema}
+&lt;/script&gt;</textarea></div>
+<div style="padding:8px 14px;background:#f0f9ff;border-top:1px solid #bae6fd;font-size:11.5px;color:#0c4a6e">Paste this block at the very bottom of your WooCommerce HTML product description. It tells Google the FAQ answers and can show them directly in search results.</div></div>
+
 <div class="seo-block"><div class="seo-block-head">Popular Searches <span class="seo-label">Already in HTML</span></div><div class="searches-box">${terms.map(t=>'<span>'+t+'</span>').join('')}</div><div class="char-bar"><span>${terms.length} terms generated</span><span></span></div></div>
+
 <div class="seo-block"><div class="seo-block-head">Checklist <span class="seo-label">Before publishing</span></div><div style="padding:14px 16px;font-size:13px;line-height:2;background:#fff">
 <div>☐ &nbsp;Set the <strong>SEO title</strong> in Yoast / Rank Math</div>
 <div>☐ &nbsp;Set the <strong>meta description</strong> in Yoast / Rank Math</div>
 <div>☐ &nbsp;Set the <strong>focus keyphrase</strong> in Yoast / Rank Math</div>
 <div>☐ &nbsp;Set the <strong>permalink slug</strong> to: <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:12px">${slug}</code></div>
+<div>☐ &nbsp;Paste the <strong>short description</strong> into the WooCommerce short description field</div>
+<div>☐ &nbsp;Paste the <strong>FAQ schema</strong> at the bottom of the HTML product description</div>
 <div>☐ &nbsp;Add the <strong>event thumbnail image</strong> with artist + venue in the alt text</div>
-<div>☐ &nbsp;Set the <strong>product short description</strong> — 2–3 sentences</div>
 <div>☐ &nbsp;Add the correct <strong>product category</strong></div>
 <div>☐ &nbsp;Set the <strong>price</strong> on the product</div>
 <div>☐ &nbsp;Share on Facebook, Instagram and WhatsApp after publishing</div>
 </div></div>
-<div class="copy-row" style="padding:0 4px">
+
+<div class="copy-row" style="padding:0 4px;flex-wrap:wrap;gap:8px">
 <button class="btn btn-blue" onclick="copyText(document.getElementById('seoTitle').value,'copiedTitle')">📋 Copy Title</button><span class="copied" id="copiedTitle">✅ Copied!</span>
-<button class="btn btn-blue" onclick="copyText(document.getElementById('seoDesc').value,'copiedDesc')" style="margin-left:8px">📋 Copy Description</button><span class="copied" id="copiedDesc">✅ Copied!</span>
+<button class="btn btn-blue" onclick="copyText(document.getElementById('seoDesc').value,'copiedDesc')">📋 Copy Meta Desc</button><span class="copied" id="copiedDesc">✅ Copied!</span>
+<button class="btn" style="background:#92400e" onclick="copyText(document.getElementById('shortDesc').value,'copiedShort')">📋 Copy Short Desc</button><span class="copied" id="copiedShort">✅ Copied!</span>
+<button class="btn btn-green" onclick="copyEl('faqSchema','copiedFAQ')">📋 Copy FAQ Schema</button><span class="copied" id="copiedFAQ">✅ Copied!</span>
 </div></div>`;
+}
+
+function updatePreview(){
+  const t=document.getElementById('seoTitle');
+  const d=document.getElementById('seoDesc');
+  const pt=document.getElementById('prevTitle');
+  const pd=document.getElementById('prevDesc');
+  const tc=document.getElementById('tcCount');
+  const dc=document.getElementById('dcCount');
+  if(!t||!d||!pt||!pd)return;
+  const tv=t.value,dv=d.value;
+  pt.textContent=tv.length>60?tv.substring(0,57)+'...':tv;
+  pd.textContent=dv.length>160?dv.substring(0,157)+'...':dv;
+  tc.textContent=tv.length+' chars';
+  tc.className='cnt '+(tv.length>60?'bad':tv.length>50?'good':'warn');
+  dc.textContent=dv.length+' chars';
+  dc.className='cnt '+(dv.length>160?'bad':dv.length>120?'good':'warn');
 }
 
 // AI REWRITE
